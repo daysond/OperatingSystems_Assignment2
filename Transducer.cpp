@@ -104,7 +104,7 @@ int Transducer::run() {
             }
             ShmPTR->seismicData[seismicDataIndex].packetLen = BUF_LEN;
             memcpy(ShmPTR->seismicData[seismicDataIndex].data, buffer, BUF_LEN);
-            cout << buffer << endl;
+            // cout << buffer << endl;
             ShmPTR->seismicData[seismicDataIndex].status=WRITTEN;
             sem_post(sem_id1);
             ++seismicDataIndex;

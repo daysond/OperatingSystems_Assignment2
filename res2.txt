@@ -1,0 +1,54 @@
+thread running
+
+
+[GOT]Subscribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has subscribed.
+
+
+[GOT]Subscribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has subscribed.
+
+
+[GOT]Subscribe,DataCenter1,Leaf from 127.0.0.1:1161
+[127.0.0.1:1161] has subscribed.
+
+
+[GOT]Vubscribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has been added to greylist. num attemped: 1
+
+
+[GOT]VVbscribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has been added to greylist. num attemped: 2
+
+
+[GOT]VVVscribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has been added to greylist. num attemped: 3
+
+
+[GOT]Subscribe,DataCenter2,Leaf from 127.0.0.1:1162
+[127.0.0.1:1162] has subscribed.
+
+
+[GOT]VVVVcribe,DataCenter6,Leaf from 127.0.0.1:1166
+[127.0.0.1:1166] has been added to greylist. num attemped: 4
+[127.0.0.1:1166] has been blocked.
+
+
+
+[GOT]Subscribe,DataCenterRogue15,Lez^ from 127.0.0.1:1165
+[127.0.0.1:1165] has been added to greylist. num attemped: 1
+
+
+[GOT]Subscribe,DataCenterRogue15,Lez_ from 127.0.0.1:1165
+[127.0.0.1:1165] has been added to greylist. num attemped: 2
+
+
+[GOT]Subscribe,DataCenterRogue15,Lez` from 127.0.0.1:1165
+[127.0.0.1:1165] has been added to greylist. num attemped: 3
+
+
+[GOT]Subscribe,DataCenterRogue15,Leza from 127.0.0.1:1165
+[127.0.0.1:1165] has been added to greylist. num attemped: 4
+[127.0.0.1:1165] has been blocked.
+
+ shutting down
