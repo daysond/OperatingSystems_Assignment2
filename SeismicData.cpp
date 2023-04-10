@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include <map>
 #include <set>
-#include<algorithm>
+#include <algorithm>
 
 using namespace std;
 
