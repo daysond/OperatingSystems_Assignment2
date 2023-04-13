@@ -50,16 +50,18 @@ class DataAcquisition {
     std::map<std::string, Subscriber> black_list; 
     sem_t *sem_id1;
     key_t  ShmKey;
-    int    ShmID, sv_sock, ret;
+    int    ShmID, sv_sock;
     struct SeismicMemory *ShmPTR;
     pthread_t rd_tid, wr_tid;
 
    
-    void authenticate(char auth_msg[BUF_LEN], struct sockaddr_in *cl_addr, int sv_sock);
-    int setupSharedMemory();
+    void authenticate(char cl_msg[BUF_LEN], struct sockaddr_in *cl_addr, int sv_sock);
+    void check(int);
+    void AddToGreyList(std::string key, Subscriber &sub);
+    void setupSharedMemory();
     void setupSignalHandler();
-    int setupSocket();
-    int createThreads();
+    void setupSocket();
+    void createThreads();
     void readMemory();
     
 
@@ -68,7 +70,7 @@ class DataAcquisition {
     static DataAcquisition* instance;
     static void* recv_func(void *arg);
     static void* send_func(void *arg);
-    int run();
+    void run();
     void shutdown();
 };
 
