@@ -1,4 +1,8 @@
-
+// 
+//  DataAcquisition.cpp  -   implementation for DataAcquisition
+//  Created by  Yiyuan Dong  31-Mar-23 
+//  Student number: 065-182-131
+//
 
 
 #include "DataAcquisition.h"
@@ -10,7 +14,6 @@ DataAcquisition* DataAcquisition::instance=nullptr;
 static void signalHandler(int signum) {
     switch(signum) {
         case SIGINT:
-            //TODO: SHUTDOWN
             cout << "DataAcquisition shutting down..." << endl;
             DataAcquisition::instance->shutdown();
             break;
@@ -22,7 +25,6 @@ static void signalHandler(int signum) {
  *****************************/
 
 DataAcquisition::DataAcquisition() {
-    // lock_x = PTHREAD_MUTEX_INITIALIZER;
     is_running=false;
     ShmPTR=nullptr;
     DataAcquisition::instance = this;
@@ -35,9 +37,9 @@ void DataAcquisition::run() {
     setupSocket();
     createThreads();
     readMemory(); //NOTE: readMemory is blocking with a while loop
-
-    // pthread_join(rd_tid, NULL);
-    // pthread_join(wr_tid, NULL);
+    
+    pthread_join(rd_tid, NULL);
+    pthread_join(wr_tid, NULL);
 
     shutdown();
 
@@ -48,12 +50,12 @@ void DataAcquisition::run() {
 void DataAcquisition::shutdown() {
  
     is_running = false;
-    // TODO: CLOSE SOCKETS
+
     close(sv_sock);
-    // TODO: CLOSE SEM
+ 
     sem_close(sem_id1);
     sem_unlink(SEMNAME);
-    // TODO: CLOSE SHM
+
     shmdt((void *)ShmPTR);
     shmctl(ShmID, IPC_RMID, NULL);
 
@@ -80,7 +82,6 @@ void DataAcquisition::setupSharedMemory() {
     }
 
     // MARK: SEMAPHORE
-    // TODO: 1 OR 1? 
     sem_id1 = sem_open(SEMNAME, O_CREAT, SEM_PERMS, 0);
 
     if(sem_id1 == SEM_FAILED) {
@@ -123,16 +124,15 @@ void DataAcquisition::setupSocket() {
 }
 
 void DataAcquisition::createThreads() {
-    // MARK: THREADS SET UP W/ MUTEX
+    // threads setting up
     pthread_mutex_init(&lock_x, NULL);
-    
     check(pthread_create(&rd_tid, NULL, &DataAcquisition::recv_func, this));
     check(pthread_create(&wr_tid, NULL, &DataAcquisition::send_func, this));
     
 }
 
 void DataAcquisition::readMemory() {
-
+    // reads the packet from shared memory
     int dataIdx = 0;
     cout << "[DEBUG] Starting to read shared memory... " << endl; 
     while(is_running) {
@@ -165,7 +165,7 @@ void DataAcquisition::readMemory() {
  *****************************/
 
 void* DataAcquisition::recv_func(void *arg) {
- 
+    // Receive subscribe request from data centers
     cout << "[DEBUG] Receive thread started... " << endl; 
     DataAcquisition* instance = (DataAcquisition*)arg;
     int ret = 0;
@@ -201,7 +201,7 @@ void* DataAcquisition::recv_func(void *arg) {
 }
 
 void DataAcquisition::authenticate(char cl_msg[BUF_LEN], struct sockaddr_in *cl_addr, int sv_sock) {
- 
+    // logic that deals with the subscribe requests, authenticats the Data centers, or block them if they are attacking or spamming the server
     const char password[] = "Leaf";
     const char action_sub[] = "Subscribe";
     const char action_cnl[] = "Cancel";
@@ -274,14 +274,14 @@ void DataAcquisition::authenticate(char cl_msg[BUF_LEN], struct sockaddr_in *cl_
     if((strcmp(extractedMsgs[CMD_IDX], action_sub) != 0) && strcmp(extractedMsgs[CMD_IDX], action_cnl) != 0) {
         // invalid command
         cout << "DataAcquisition: unknown command " << extractedMsgs[CMD_IDX] << endl;
-        AddToGreyList(key, sub);
+        addToGreyList(key, sub);
 
     } else if(((strcmp(extractedMsgs[PSW_IDX], password) != 0) && (strcmp(extractedMsgs[CMD_IDX], action_cnl) !=0))) 
-        AddToGreyList(key, sub); // guess password
+        addToGreyList(key, sub); // guess password
         
 }
 
-void DataAcquisition::AddToGreyList(string key, Subscriber &sub) {
+void DataAcquisition::addToGreyList(string key, Subscriber &sub) {
     // addes data center to the grey list by key
     grey_list[key] = (grey_list.find(key) != grey_list.end()) ? grey_list[key]+1 : 1;
 
@@ -306,18 +306,14 @@ void* DataAcquisition::send_func(void *arg) {
     cout << "[DEBUG] Send thread started... " << endl; 
     struct sockaddr_in cl_addr;
     DataPacket *packet;
-    // std::map<std::string, Subscriber> subscribers;
+
     while(instance->is_running) {
    
         if (!instance->packetQueue.empty()) {
             cout << "DataPacket.size(): " << instance->packetQueue.size() << " Num Clients: " << instance->subscribers.size() <<  endl;
-            packet = &(instance->packetQueue.front());
+            packet = &(instance->packetQueue.front()); // NOTE: not locking since no other thread is popping the queue
 
-            //NOTE: making a local copy of the subscribers since sendto could block (no mutexing)
             pthread_mutex_lock(&(instance->lock_x));
-            subscribers =  instance->subscribers;
-            pthread_mutex_unlock(&(instance->lock_x));
-
             for (auto it = instance->subscribers.begin(); it != instance->subscribers.end(); it++) {
   
                 memset(&cl_addr, 0, sizeof(cl_addr));
@@ -341,6 +337,7 @@ void* DataAcquisition::send_func(void *arg) {
                 sendto(instance->sv_sock, (char *)buf, BUF_LEN+3, 0,(struct sockaddr *)&cl_addr, sizeof(cl_addr));
           
             }
+            pthread_mutex_unlock(&(instance->lock_x));
        
             pthread_mutex_lock(&instance->lock_x);
             instance->packetQueue.pop();

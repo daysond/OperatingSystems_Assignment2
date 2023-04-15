@@ -1,3 +1,8 @@
+// 
+//  DataAcquisitionMain.cpp  -   main file for DataAcquisition
+//  Created by  Yiyuan Dong  31-Mar-23 
+//  Student number: 065-182-131
+//
 
 
 #include "DataAcquisition.h"

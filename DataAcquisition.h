@@ -1,6 +1,7 @@
-//
-//
-//
+// 
+//  DataAcquisition.h  -   header file for DataAcquisition
+//  Created by  Yiyuan Dong  31-Mar-23 
+//  Student number: 065-182-131
 //
 
 #ifndef DATAACQUISITION_H_
@@ -41,7 +42,6 @@ class DataAcquisition {
         int port;
     };
 
-
     bool is_running;
     pthread_mutex_t lock_x;
     std::queue<DataPacket> packetQueue;
@@ -57,7 +57,7 @@ class DataAcquisition {
    
     void authenticate(char cl_msg[BUF_LEN], struct sockaddr_in *cl_addr, int sv_sock);
     void check(int);
-    void AddToGreyList(std::string key, Subscriber &sub);
+    void addToGreyList(std::string key, Subscriber &sub);
     void setupSharedMemory();
     void setupSignalHandler();
     void setupSocket();
