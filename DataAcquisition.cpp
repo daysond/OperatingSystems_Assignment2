@@ -180,7 +180,7 @@ void* DataAcquisition::recv_func(void *arg) {
 
         memset(&cl_addr, 0, sizeof(cl_addr));
         ret = recvfrom(instance->sv_sock, buf, BUF_LEN, 0, (struct sockaddr*) &cl_addr, &cl_addr_len);
-
+    
        if (ret > 0){
             memset(IP_addr, 0, INET_ADDRSTRLEN);
             inet_ntop(AF_INET, &(cl_addr.sin_addr), IP_addr, INET_ADDRSTRLEN);
@@ -306,7 +306,7 @@ void* DataAcquisition::send_func(void *arg) {
     cout << "[DEBUG] Send thread started... " << endl; 
     struct sockaddr_in cl_addr;
     DataPacket *packet;
-    std::map<std::string, Subscriber> subscribers;
+    // std::map<std::string, Subscriber> subscribers;
     while(instance->is_running) {
    
         if (!instance->packetQueue.empty()) {
