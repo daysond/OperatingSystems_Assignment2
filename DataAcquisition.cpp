@@ -310,7 +310,7 @@ void* DataAcquisition::send_func(void *arg) {
     while(instance->is_running) {
    
         if (!instance->packetQueue.empty()) {
-            cout << "DataPacket.size(): " << instance->packetQueue.size() << " Num Clients: " << instance->subscribers.size() <<  endl;
+            cout << "DataPacket.size(): " << instance->packetQueue.size() << " Num Clients: " << instance->subscribers.size() << " Rogue Clients: " << instance->black_list.size() << endl;
             packet = &(instance->packetQueue.front()); // NOTE: not locking since no other thread is popping the queue
 
             pthread_mutex_lock(&(instance->lock_x));
